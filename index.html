@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> QR Access </title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1057,6 +1058,7 @@
                         <img id="photoPreview" alt="Photo du visiteur">
                         <div class="camera-buttons">
                             <button type="button" class="btn btn-secondary btn-small" onclick="startCamera()" id="startCameraBtn">📷 Démarrer Caméra</button>
+                            <button type="button" class="btn btn-ghost btn-small" onclick="switchVisitorCamera()" id="switchCamBtn" title="Changer caméra">↔️</button>
                             <button type="button" class="btn btn-success btn-small" onclick="capturePhoto()" id="capturePhotoBtn" style="display: none;">📸 Prendre Photo</button>
                             <button type="button" class="btn btn-secondary btn-small" onclick="stopCamera()" id="stopCameraBtn" style="display: none;">⏹️ Arrêter Caméra</button>
                             <button type="button" class="btn btn-danger btn-small" onclick="clearPhoto()" id="clearPhotoBtn" style="display: none;">🗑️ Effacer Photo</button>
@@ -1221,6 +1223,7 @@
                         <img id="photoPreviewCer" alt="Photo de la cérémonie" style="display:none; max-width:100%; border-radius:8px;"/>
                         <div class="camera-buttons">
                             <button type="button" class="btn btn-secondary btn-small" onclick="startCameraCer()" id="startCameraBtnCer">📷 Démarrer Caméra</button>
+                            <button type="button" class="btn btn-ghost btn-small" onclick="switchCeremonyCamera()" id="switchCamBtnCer" title="Changer caméra">↔️</button>
                             <button type="button" class="btn btn-success btn-small" onclick="capturePhotoCer()" id="capturePhotoBtnCer" style="display: none;">📸 Prendre Photo</button>
                             <button type="button" class="btn btn-secondary btn-small" onclick="stopCameraCer()" id="stopCameraBtnCer" style="display: none;">⏹️ Arrêter Caméra</button>
                             <button type="button" class="btn btn-danger btn-small" onclick="clearPhotoCer()" id="clearPhotoBtnCer" style="display: none;">🗑️ Effacer Photo</button>
@@ -1265,9 +1268,19 @@
                         <div style="display:flex;gap:8px;align-items:center;">
                             <input type="text" id="verifyCode" placeholder="Scannez le QR code, entrez le code de 5 chiffres ou l'ID">
                             <button id="pasteVerifyBtn" class="btn btn-ghost btn-small" onclick="pasteIntoVerify('verifyCode','pasteVerifyBtn', true)" title="Coller depuis le presse-papiers">📥</button>
+                            <button id="startScanBtn" class="btn btn-ghost btn-small" onclick="toggleVerifyScanner()" title="Scanner via caméra">📷</button>
                         </div>
                     </div>
                     <button class="btn btn-success" style="width: 100%;" onclick="verifyCode()">✓ Vérifier</button>
+
+                    <div id="verifyScanner" style="display:none; margin-top:15px;">
+                        <video id="verifyVideo" autoplay playsinline style="width:100%; border-radius:8px; background:#000; max-height:320px;"></video>
+                        <canvas id="verifyCanvas" style="display:none;"></canvas>
+                        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                            <button class="btn btn-danger btn-small" onclick="stopVerifyCamera()">⏹️ Arrêter</button>
+                            <span id="verifyCameraStatus" style="color:var(--dark);opacity:.8;">Caméra inactive</span>
+                        </div>
+                    </div>
 
                     <div id="verifyResult" style="margin-top: 25px; display: none;">
                         <div id="verifyContent"></div>
@@ -1347,6 +1360,10 @@
         let currentPhotoCanvas = null;
         let currentPhotoCanvasCer = null;
         let streamActive = false;
+        let visitorFacing = 'user';
+        let ceremonyFacing = 'user';
+        let visitorStreamActive = false;
+        let ceremonyStreamActive = false;
 
         // Initialiser
         document.addEventListener('DOMContentLoaded', function() {
@@ -1434,12 +1451,12 @@
             const captureBtn = document.getElementById('capturePhotoBtn');
             const stopBtn = document.getElementById('stopCameraBtn');
             const statusDiv = document.getElementById('cameraStatus');
-
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+            const constraints = { video: { facingMode: visitorFacing }, audio: false };
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(function(stream) {
                     video.srcObject = stream;
                     video.style.display = 'block';
-                    streamActive = true;
+                    visitorStreamActive = true;
                     startBtn.style.display = 'none';
                     captureBtn.style.display = 'inline-block';
                     stopBtn.style.display = 'inline-block';
@@ -1484,7 +1501,7 @@
                 tracks.forEach(track => track.stop());
                 video.srcObject = null;
                 video.style.display = 'none';
-                streamActive = false;
+                visitorStreamActive = false;
             }
 
             if (!document.getElementById('photoPreview').src || !document.getElementById('photoPreview').src.includes('data:')) {
@@ -1513,12 +1530,12 @@
                     const captureBtn = document.getElementById('capturePhotoBtnCer');
                     const stopBtn = document.getElementById('stopCameraBtnCer');
                     const statusDiv = document.getElementById('cameraStatusCer');
-
-                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                    const constraints = { video: { facingMode: ceremonyFacing }, audio: false };
+                    navigator.mediaDevices.getUserMedia(constraints)
                         .then(function(stream) {
                             video.srcObject = stream;
                             video.style.display = 'block';
-                            streamActive = true;
+                            ceremonyStreamActive = true;
                             startBtn.style.display = 'none';
                             captureBtn.style.display = 'inline-block';
                             stopBtn.style.display = 'inline-block';
@@ -1563,7 +1580,7 @@
                         tracks.forEach(track => track.stop());
                         video.srcObject = null;
                         video.style.display = 'none';
-                        streamActive = false;
+                        ceremonyStreamActive = false;
                     }
 
                     if (!document.getElementById('photoPreviewCer').src || !document.getElementById('photoPreviewCer').src.includes('data:')) {
@@ -1622,6 +1639,28 @@
             updateDashboard();
 
             alert('✓ Invitation créée avec succès!');
+        }
+
+        // Basculer caméra visiteur (user <-> environment)
+        function switchVisitorCamera() {
+            visitorFacing = (visitorFacing === 'user') ? 'environment' : 'user';
+            const btn = document.getElementById('switchCamBtn');
+            if (btn) btn.textContent = (visitorFacing === 'user') ? '↔️' : '↔️';
+            if (visitorStreamActive) {
+                stopCamera();
+                setTimeout(() => startCamera(), 250);
+            }
+        }
+
+        // Basculer caméra cérémonie (user <-> environment)
+        function switchCeremonyCamera() {
+            ceremonyFacing = (ceremonyFacing === 'user') ? 'environment' : 'user';
+            const btn = document.getElementById('switchCamBtnCer');
+            if (btn) btn.textContent = (ceremonyFacing === 'user') ? '↔️' : '↔️';
+            if (ceremonyStreamActive) {
+                stopCameraCer();
+                setTimeout(() => startCameraCer(), 250);
+            }
         }
 
         // Cree une Ceremonie
@@ -2171,9 +2210,98 @@
             }
             
             // Retourner null pour les visiteurs non cérémonies, la fonction d'affichage gérera les cas génériques
-            return null;
-        }
-        function verifyCode() {
+                return null;
+            }
+
+            // === Fonctions pour scanner le QR depuis la caméra dans l'onglet Vérifier ===
+            let verifyStream = null;
+            let verifyScanActive = false;
+            let verifyScanAnimationId = null;
+
+            function toggleVerifyScanner() {
+                const scanner = document.getElementById('verifyScanner');
+                if (!scanner) return;
+                if (scanner.style.display === 'none' || scanner.style.display === '') {
+                    startVerifyCamera();
+                } else {
+                    stopVerifyCamera();
+                }
+            }
+
+            function startVerifyCamera() {
+                const video = document.getElementById('verifyVideo');
+                const status = document.getElementById('verifyCameraStatus');
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    if (status) { status.textContent = 'Navigateur ne supporte pas getUserMedia'; status.style.color = '#ef4444'; }
+                    return;
+                }
+
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+                    .then(stream => {
+                        verifyStream = stream;
+                        video.srcObject = stream;
+                        document.getElementById('verifyScanner').style.display = 'block';
+                        document.getElementById('startScanBtn').textContent = '✖️';
+                        if (status) { status.textContent = 'Caméra active - recherche du QR...'; status.style.color = '#10b981'; }
+                        verifyScanActive = true;
+                        scanVerifyFrame();
+                    })
+                    .catch(err => {
+                        console.error('Erreur caméra verify:', err);
+                        if (status) { status.textContent = '❌ Erreur: accès caméra refusé.'; status.style.color = '#ef4444'; }
+                    });
+            }
+
+            function stopVerifyCamera() {
+                verifyScanActive = false;
+                if (verifyStream) {
+                    verifyStream.getTracks().forEach(t => t.stop());
+                    verifyStream = null;
+                }
+                const video = document.getElementById('verifyVideo');
+                if (video) video.srcObject = null;
+                const scanner = document.getElementById('verifyScanner');
+                if (scanner) scanner.style.display = 'none';
+                if (document.getElementById('startScanBtn')) document.getElementById('startScanBtn').textContent = '📷';
+                if (verifyScanAnimationId) cancelAnimationFrame(verifyScanAnimationId);
+                const status = document.getElementById('verifyCameraStatus');
+                if (status) { status.textContent = 'Caméra arrêtée'; status.style.color = '#6b7280'; }
+            }
+
+            function scanVerifyFrame() {
+                const video = document.getElementById('verifyVideo');
+                const canvas = document.getElementById('verifyCanvas');
+                if (!verifyScanActive) return;
+                if (!video || !canvas) return;
+
+                if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+                    verifyScanAnimationId = requestAnimationFrame(scanVerifyFrame);
+                    return;
+                }
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                try {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'attemptBoth' });
+                    if (code && code.data) {
+                        document.getElementById('verifyCode').value = code.data;
+                        stopVerifyCamera();
+                        const status = document.getElementById('verifyCameraStatus');
+                        if (status) { status.textContent = 'QR détecté'; status.style.color = '#10b981'; }
+                        setTimeout(() => { verifyCode(); }, 200);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Erreur lecture imageData:', e);
+                }
+
+                verifyScanAnimationId = requestAnimationFrame(scanVerifyFrame);
+            }
+
+            function verifyCode() {
             const code = document.getElementById('verifyCode').value.trim();
             if (!code) return;
 
