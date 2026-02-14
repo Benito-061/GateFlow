@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Access </title>
+    <title> QR Access </title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * {
@@ -97,7 +97,7 @@
             50% { transform: scale(1.05); background-color: #ff6b6b; }
         }
 
-        /* Container Principal */
+        /* Container principal */
         .container {
             max-width: 1400px;
             width: 100%;
@@ -178,7 +178,7 @@
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
 
-        /* Alerte et notif */
+        /* Alerte et notifications */
         .alarm-notification {
             position: fixed;
             top: 20px;
@@ -247,7 +247,7 @@
             background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Main Content */
+        /* Contenu rincioal */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -335,7 +335,7 @@
             min-height: 100px;
         }
 
-        /* Buttons */
+        /* Buotons */
         .btn {
             padding: 14px 30px;
             border: none;
@@ -414,7 +414,7 @@
             font-size: 12px;
         }
 
-        /* QR Code Container */
+        /* Conteneur du code QR */
         .qr-container {
             background: linear-gradient(135deg, var(--light) 0%, #f3f4f6 100%);
             border-radius: 15px;
@@ -433,7 +433,7 @@
             background: linear-gradient(135deg, #f0f7ff 0%, #f5f3ff 100%);
         }
 
-        /* Lovers palette for ceremony: soft rose / blush */
+        /* Couleurs pour section ceremonie */
         #ceremonie .card {
             background: linear-gradient(135deg, #fff0f6 0%, #fff7f9 100%);
             border: 1px solid rgba(236,72,153,0.08);
@@ -479,7 +479,7 @@
             opacity: 0.7;
         }
 
-        /* Camera Capture Section */
+        /* Section Camera */
         .camera-section {
             background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             border-radius: 15px;
@@ -538,7 +538,7 @@
             margin-top: 10px;
         }
 
-        /* Visitor List */
+        /* List de visiteurs */
         .visitors-grid {
             display: grid;
             gap: 15px;
@@ -643,7 +643,7 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
-        /* Stats Grid */
+        /* Stats de grilles */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -686,7 +686,7 @@
             background-clip: text;
         }
 
-        /* Tabs */
+        /* Onglets */
         .tab-content {
             display: none;
         }
@@ -696,7 +696,7 @@
             animation: fadeIn 0.5s ease-out;
         }
 
-        /* Modal */
+        /* Modale */
         .modal {
             display: none;
             position: fixed;
@@ -728,7 +728,7 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* Override inline `background: white` usages inserted via JS/template strings */
+        /* Remplacement en ligne `background: white` utilisations inserer via JS/modele */
         [style*="background: white"] { background: var(--surface) !important; color: var(--dark) !important; }
         [style*="background:white"] { background: var(--surface) !important; color: var(--dark) !important; }
         [style*="background: white;"] { background: var(--surface) !important; color: var(--dark) !important; }
@@ -769,7 +769,7 @@
             color: var(--primary);
         }
 
-        /* Daily Report */
+        /* Rapport journalier */
         .report-section {
             margin-bottom: 30px;
             padding: 20px;
@@ -822,7 +822,7 @@
             max-width: 750px;
         }
 
-        /* Access Log */
+        /* Journal d'acces */
         .log-item {
             background: var(--light);
             border-left: 4px solid var(--primary);
@@ -849,7 +849,7 @@
             opacity: 0.7;
         }
 
-        /* Scrollbar */
+        /* Bar de defilement */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -868,7 +868,7 @@
             background: var(--accent);
         }
 
-        /* Responsive */
+        /* Sensible */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -901,7 +901,7 @@
     </style>
 </head>
 <body>
-    <!-- Alarm Notification -->
+    <!--Notifications de l'alarme -->
     <div class="alarm-notification" id="alarmNotification">
         <div class="alarm-content">
             <span class="alarm-icon">🚨</span>
@@ -931,7 +931,7 @@
             </div>
         </header>
 
-        <!-- Dashboard Tab -->
+        <!-- Tableau de bord -->
         <div id="dashboard" class="tab-content active">
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-box">
@@ -974,7 +974,7 @@
             </div>
         </div>
 
-        <!-- Create Tab -->
+        <!-- Creer un onglet -->
         <div id="create" class="tab-content">
             <div class="main-content">
                 <div class="card">
@@ -1050,7 +1050,7 @@
                         <button type="submit" class="btn btn-primary" style="width: 100%;">🎫 Générer Invitation et QR Code</button>
                     </form>
 
-                    <!-- Camera Capture Section -->
+                    <!-- Section de la camera -->
                     <div class="camera-section">
                         <h3>Prendre une Photo du Visiteur</h3>
                         <video id="videoCapture" width="320" height="240" autoplay playsinline></video>
@@ -1214,7 +1214,7 @@
                         <button type="submit" class="btn btn-primary" style="width: 100%;">🎫 Générer Cérémonie et QR Code</button>
                     </form>
 
-                    <!-- Camera Capture Section for Cérémonie -->
+                    <!-- Section de la capture pour la Cérémonie -->
                     <div class="camera-section">
                         <h3>Prendre une Photo pour la Cérémonie</h3>
                         <video id="videoCaptureCer" width="320" height="240" autoplay playsinline style="display:none;"></video>
@@ -1255,7 +1255,7 @@
             </div>
         </div>
 
-        <!-- Verify Tab -->
+        <!-- Onlglet verifier -->
         <div id="verify" class="tab-content">
             <div class="main-content">
                 <div class="card">
@@ -1289,7 +1289,7 @@
             </div>
         </div>
 
-        <!-- History Tab -->
+        <!-- Onglet histoqique -->
         <div id="history" class="tab-content">
             <div class="card">
                 <h2>Historique des Accès</h2>
@@ -1304,7 +1304,7 @@
         </div>
     </div>
 
-    <!-- Daily Report Modal -->
+    <!-- Rapport journalier -->
     <div id="reportModal" class="modal">
         <div class="modal-content modal-content-large">
             <div class="modal-header">
@@ -1319,7 +1319,7 @@
         </div>
     </div>
 
-    <!-- Reset Confirmation Modal -->
+    <!-- Reinitialiser les invitations -->
     <div id="resetModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1340,7 +1340,7 @@
     </div>
 
     <script>
-        // Data Storage
+        // Stockage de données 
         let visitors = JSON.parse(localStorage.getItem('visitors')) || [];
         let accessLog = JSON.parse(localStorage.getItem('accessLog')) || [];
         let currentQRCode = null;
@@ -1348,13 +1348,13 @@
         let currentPhotoCanvasCer = null;
         let streamActive = false;
 
-        // Initialize
+        // Initialiser
         document.addEventListener('DOMContentLoaded', function() {
             updateDashboard();
             setDateTime();
             startAlarmSystem();
             
-            // Auto-verify input
+            // Verif auto des entrees
             document.getElementById('verifyCode').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1362,7 +1362,7 @@
                 }
             });
 
-            // Auto-detect scanner input (fast consecutive input)
+            // Detection auto de l'entree du scan
             let lastInputTime = 0;
             let inputCount = 0;
             document.getElementById('verifyCode').addEventListener('input', function(e) {
@@ -1377,14 +1377,14 @@
                 
                 lastInputTime = now;
                 
-                // If input looks like a barcode (very fast consecutive inputs), auto-verify
+                // Si la saisi ressemble a un code-barres (verif les saisis consecutive)
                 if (this.value.length > 5 && inputCount > 3 && timeDiff < 50) {
                     setTimeout(() => verifyCode(), 100);
                 }
             });
         });
 
-        // Set current date/time as default
+        // Definir la date et l'heure actuelle comme valeur par defaut
         function setDateTime() {
             const now = new Date();
             const startInput = document.getElementById('startDateTime');
@@ -1405,29 +1405,29 @@
             }
         }
 
-        // Switch Tab
+        // Onglet de changement
         function switchTab(tabName, buttonElement) {
-            // Remove active class from all tabs and buttons
+            // Supp class active de tous les onglets et boutons
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             
-            // Add active class to the selected tab
+            // Ajouter class active a l'onglet selectionne
             const tabElement = document.getElementById(tabName);
             if (tabElement) {
                 tabElement.classList.add('active');
             }
             
-            // Add active class to the clicked button
+            // Ajouter class active au bouton selectionne
             if (buttonElement) {
                 buttonElement.classList.add('active');
             }
 
-            // Update content if needed
+            // Actualiser les donnees si on retourne au dashboard ou a l'historique
             if (tabName === 'dashboard') updateDashboard();
             if (tabName === 'history') updateAccessLog();
         }
 
-        // Camera Functions
+        // Fonction de la camera pour la capture de photo du visiteur
         function startCamera() {
             const video = document.getElementById('videoCapture');
             const startBtn = document.getElementById('startCameraBtn');
@@ -1506,7 +1506,7 @@
             document.getElementById('cameraStatus').style.color = '#6b7280';
         }
 
-                // Camera functions for ceremony (separate elements/canvas)
+                // Camera pour la cérémonie
                 function startCameraCer() {
                     const video = document.getElementById('videoCaptureCer');
                     const startBtn = document.getElementById('startCameraBtnCer');
@@ -1585,11 +1585,11 @@
                     document.getElementById('cameraStatusCer').style.color = '#6b7280';
                 }
 
-        // Create Visitor
+        // Cree un visiteur
         function createVisitor(e) {
             e.preventDefault();
 
-            // Generate 5-digit code
+            // Generer un code de 5 chiffres
             const quickCode = String(Math.floor(10000 + Math.random() * 90000));
 
             const visitor = {
@@ -1624,7 +1624,7 @@
             alert('✓ Invitation créée avec succès!');
         }
 
-        // Create Ceremony
+        // Cree une Ceremonie
         function createCeremony(e) {
             e.preventDefault();
             console.log('createCeremony called');
@@ -1633,7 +1633,7 @@
             const cerType = document.getElementById('cerType').value;
             console.log('Ceremony type:', cerType);
             
-            // Determine families based on ceremony type
+            // Detrminer les familles associees a la ceremonie 
             let families = [];
             const family1 = document.getElementById('cerFamily1').value;
             if (cerType === 'Mariage' || cerType === 'Dote') {
@@ -1643,7 +1643,7 @@
                 families = [family1];
             }
 
-            // compute start/end safely (cerEnd may not exist in the form)
+            // Securite pour les dates de la ceremonie 
             const cerStartVal = document.getElementById('cerStart')?.value;
             const cerEndEl = document.getElementById('cerEnd');
             const cerStart = cerStartVal ? new Date(cerStartVal) : new Date();
@@ -1674,7 +1674,7 @@
                 category: 'ceremonie'
             };
 
-            // Add mariage-specific fields if type is Mariage
+            // Ajouter les details specifiques au mariage si le type de ceremonie est "Mariage"
             if (cerType === 'Mariage') {
                 visitor.mariage = {
                     eglise: document.getElementById('cerEglise')?.value || '',
@@ -1683,7 +1683,7 @@
                     photographe: document.getElementById('cerPhotographe')?.value || '',
                     evenements: mariageEvents
                 };
-                // Reset mariage events after saving
+                // Reinitaliser les evenements du mariage pour la prochaine ceremonie
                 mariageEvents = [];
                 document.getElementById('evenementsList').innerHTML = '';
             }
@@ -1700,7 +1700,7 @@
             alert('✓ Cérémonie créée avec succès!');
         }
 
-        // Toggle second family field and mariage-specific fields based on ceremony type
+        // Basculer l'affichage des champs de famille en fonction du type de cérémonie
         document.addEventListener('DOMContentLoaded', function() {
             const cerTypeSelect = document.getElementById('cerType');
             const family2Group = document.getElementById('cerFamily2Group');
@@ -1720,10 +1720,10 @@
             }
         });
 
-        // Array to store mariage events
+        // Tableau pour stocker les evenements horodates du mariage
         let mariageEvents = [];
 
-        // Function to add a new mariage event
+        // Fonctions pour gerer les evenements du mariage
         function addMariageEvent() {
             const eventId = 'event-' + Date.now();
             const event = {
@@ -1735,25 +1735,25 @@
             renderMariageEvents();
         }
 
-        // Function to remove a mariage event
+        // Fonctions pour supprimer un evenement du mariage
         function removeMariageEvent(eventId) {
             mariageEvents = mariageEvents.filter(e => e.id !== eventId);
             renderMariageEvents();
         }
 
-        // Function to update event time
+        // Fonctions pour mettre a jour l'heure d'un evenement du mariage
         function updateEventTime(eventId, time) {
             const event = mariageEvents.find(e => e.id === eventId);
             if (event) event.time = time;
         }
 
-        // Function to update event description
+        // Fonctions pour mettre a jour la description d'un evenement du mariage
         function updateEventDescription(eventId, description) {
             const event = mariageEvents.find(e => e.id === eventId);
             if (event) event.description = description;
         }
 
-        // Function to render mariage events
+        // Fonctions pour render les evenements du mariage dans le formulaire
         function renderMariageEvents() {
             const container = document.getElementById('evenementsList');
             container.innerHTML = '';
@@ -1776,7 +1776,7 @@
             });
         }
 
-        // Generate QR Code (supports rendez-vous and cérémonies)
+        // Generer le QR Code pour un visiteur ou une ceremonie
         function generateQRCode(visitor) {
             console.log('generateQRCode called for:', visitor.name, 'category:', visitor.category);
             const isCer = visitor && visitor.category === 'ceremonie';
@@ -1845,7 +1845,7 @@
             }
         }
 
-        // Download QR Code
+        // Telecharger le QR Code
         function downloadQR() {
             if (!currentQRCode) return;
 
@@ -1863,7 +1863,7 @@
             if (canvas) {
                 dataUrl = canvas.toDataURL();
             } else if (img) {
-                // For API-based QR codes - download from API
+                // Pour les QR codes générés via l'API, on peut directement utiliser l'URL de l'image pour le téléchargement
                 const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(currentQRCode.id)}`;
                 const link = document.createElement('a');
                 link.href = apiUrl;
@@ -1881,8 +1881,7 @@
             link.click();
         }
 
-        // Print QR Code
-        // Print QR Code
+        // Imprimer le QR Code
         function printQR() {
             if (!currentQRCode) return;
             const isCer = currentQRCode && currentQRCode.category === 'ceremonie';
@@ -1903,7 +1902,7 @@
             printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body style="display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:Segoe UI, Tahoma, Geneva, Verdana, sans-serif;padding:30px;">`);
             printWindow.document.write(`<h2 style="margin-bottom:10px;">${title}</h2>`);
             printWindow.document.write(`<img src="${dataUrl}" style="width:320px;height:320px;border-radius:8px;"/>`);
-            // Prefer reading the quick 5-digit code from the DOM (safer), fallback to currentQRCode
+            // Preferer le code rapide du QR actuel, sinon celui affiche dans le QR code, sinon celui du visiteur/ceremonie
             const quickEl = isCer ? document.getElementById('qrCerQuickCode') : document.getElementById('qrQuickCode');
             const quickCode = (quickEl && quickEl.textContent && quickEl.textContent.trim()) || (currentQRCode && currentQRCode.quickCode) || '';
             if (quickCode) {
@@ -1921,7 +1920,7 @@
         function downloadQRCer() { downloadQR(); }
         function printQRCer() { printQR(); }
 
-        // Copy quick 5-digit code to clipboard with simple UI feedback
+        // Copier le code rapide dans le presse-papiers avec fallback
         function copyQuickCode(quickId, btnId) {
             const el = document.getElementById(quickId);
             if (!el) return;
@@ -1957,7 +1956,7 @@
             if (btn) { const old = btn.textContent; btn.textContent = 'Copié!'; setTimeout(()=> btn.textContent = old, 1500); }
         }
 
-        // Paste from clipboard into the verify input (with fallback prompt)
+        // Coller le code rapide depuis le presse-papiers avec fallback
         async function pasteIntoVerify(inputId, btnId, autoVerify = false) {
             const input = document.getElementById(inputId);
             const btn = document.getElementById(btnId);
@@ -1982,10 +1981,10 @@
                     }
                 }
             } catch (e) {
-                // ignore and fallthrough to prompt fallback
+                // Ignorer les erreurs de lecture du presse-papiers et passer au fallback
             }
 
-            // Fallback: ask user to paste manually
+            // Chuten de secours pour les navigateurs sans support du presse-papiers ou en cas d'erreur
             const manual = prompt('Collez le code ici puis validez:');
             if (manual !== null) {
                 const v = manual.trim();
@@ -1998,7 +1997,7 @@
             }
         }
 
-        // Generate verification display HTML for both visitors and ceremonies
+        // Generer l'affichage de la verification pour une ceremonie
         function generateVerificationDisplay(visitor, isValid, timeRemaining, isExpired, isComing, photoDisplay) {
             const isCer = visitor.category === 'ceremonie';
             
@@ -2171,14 +2170,14 @@
                 `;
             }
             
-            // Return default (for visitors)
+            // Retourner null pour les visiteurs non cérémonies, la fonction d'affichage gérera les cas génériques
             return null;
         }
         function verifyCode() {
             const code = document.getElementById('verifyCode').value.trim();
             if (!code) return;
 
-            // Search by ID or by 5-digit quick code
+            // Rechercher d'abord par ID, puis par code rapide si aucun résultat et que le code a une longueur de 5 caractères
             let visitor = visitors.find(v => v.id === code);
             if (!visitor && code.length === 5) {
                 visitor = visitors.find(v => v.quickCode === code);
@@ -2206,7 +2205,7 @@
             const isExpired = now > visitor.endTime;
             const isDuplicate = visitor.category === 'ceremonie' && visitor.scans && visitor.scans.length > 0;
 
-            // Trigger alarm for duplicate scans (ceremonies only)
+            // Declanchement de l'alarme de duplication si necessaire
             if (isDuplicate) {
                 showAlarm('Duplication Détectée', 'Ce code QR a déjà été scanné!', 'warning');
             }
@@ -2225,7 +2224,7 @@
 
             resultDiv.style.display = 'block';
             
-            // Calculate time remaining or elapsed
+            // Calculer le temps restant pour les visiteurs valides ou le temps écoulé pour les cérémonies expirées
             const timeLeft = visitor.endTime - now;
             const minutesLeft = Math.floor(timeLeft / 60000);
             const hoursLeft = Math.floor(minutesLeft / 60);
@@ -2235,7 +2234,7 @@
                 ? `<img id="verifyPhoto" src="${visitor.photo}" alt="Photo" style="width: 150px; height: 150px; border-radius: 10px; margin: 15px 0; object-fit: cover; border: 3px solid #10b981;">`
                 : '<div style="width: 150px; height: 150px; background: #e5e7eb; border-radius: 10px; margin: 15px auto; display: flex; align-items: center; justify-content: center; color: #6b7280;">Pas de photo</div>';
 
-            // Display duplicate warning if applicable
+            // Afficher un message de duplication pour les cérémonies déjà scannées, sinon afficher les détails de validation ou de refus
             if (isDuplicate) {
                 contentDiv.innerHTML = `
                     <div style="background: linear-gradient(135deg, #fef08a 0%, #fde047 100%); border: 3px solid #f59e0b; border-radius: 12px; padding: 25px; animation: slideInRight 0.3s ease-out;">
@@ -2267,12 +2266,12 @@
                     </div>
                 `;
             } else if (isValid) {
-                // Check if this is a ceremony
+                // Verifier si c'est une cérémonie et générer l'affichage spécifique, sinon afficher les détails génériques du visiteur
                 const ceremonyDisplay = generateVerificationDisplay(visitor, true, timeRemaining, isExpired, isComing, photoDisplay);
                 if (ceremonyDisplay) {
                     contentDiv.innerHTML = ceremonyDisplay;
                 } else {
-                    // Default visitor display
+                    // Defaut pour les visiteurs non cérémonies
                     contentDiv.innerHTML = `
                     <div style="background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%); border: 3px solid #10b981; border-radius: 12px; padding: 25px; animation: slideInRight 0.3s ease-out;">
                         <div style="font-size: 64px; margin-bottom: 15px; text-align: center;">✓</div>
@@ -2335,12 +2334,12 @@
                 }
                 playSound('success');
             } else {
-                // Check if this is a ceremony
+                // Verifier si c'est une cérémonie et générer l'affichage spécifique pour les cérémonies invalides, sinon afficher les détails génériques du refus
                 const ceremonyDisplay = generateVerificationDisplay(visitor, false, timeRemaining, isExpired, isComing, photoDisplay);
                 if (ceremonyDisplay) {
                     contentDiv.innerHTML = ceremonyDisplay;
                 } else {
-                    // Default visitor display
+                    // Defaut pour les visiteurs non cérémonies
                     let reason = 'Invitation non valide';
                     let reasonDetails = '';
                     
@@ -2410,13 +2409,13 @@
                 playSound('denied');
             }
 
-            // Ensure the verification image element has its src set (use DOM assignment to avoid innerHTML parsing issues)
+            // Assurer que la photo de vérification est mise à jour si disponible
             const verifyImgEl = document.getElementById('verifyPhoto');
             if (verifyImgEl && visitor.photo) {
                 verifyImgEl.src = visitor.photo;
             }
 
-            // Auto-clear and prepare for next scan after 3 seconds
+            // Effacement automatique du résultat après 3 secondes pour préparer la prochaine vérification
             setTimeout(() => {
                 document.getElementById('verifyCode').value = '';
                 document.getElementById('verifyCode').focus();
@@ -2425,7 +2424,7 @@
             updateDashboard();
         }
 
-        // Update Dashboard
+        // Actualiser le tableau de bord
         function updateDashboard() {
             const now = new Date();
             let activeCount = 0;
@@ -2460,7 +2459,7 @@
             document.getElementById('visitorsExpiring').innerHTML = expiringHtml.length ? expiringHtml.join('') : '<p style="text-align: center; color: var(--dark); opacity: 0.5;">Aucune expiration proche</p>';
         }
 
-        // Create Visitor HTML
+        // Creer le HTML pour un visiteur dans les listes Actifs et Expirants
         function createVisitorHTML(visitor, isExpiring) {
             const now = new Date();
             const isExpired = now > visitor.endTime;
@@ -2506,7 +2505,7 @@
             `;
         }
 
-        // Show Visitor Details
+        // Les details du visiteur
         function showVisitorDetails(visitorId) {
             const visitor = visitors.find(v => v.id === visitorId);
             if (!visitor) return;
@@ -2529,7 +2528,7 @@ Sexe: ${visitor.sexe || 'N/A'}
             `);
         }
 
-        // Update Access Log
+        // Mise a jour du journal d'accès
         function updateAccessLog() {
             const logHtml = accessLog.slice(-50).reverse().map(log => {
                 const date = new Date(log.timestamp);
@@ -2550,7 +2549,7 @@ Sexe: ${visitor.sexe || 'N/A'}
             document.getElementById('accessLog').innerHTML = logHtml || '<p style="text-align: center; color: var(--dark); opacity: 0.5;">Aucun accès enregistré</p>';
         }
 
-        // --- History search (search visitors who had a QR generated) ---
+        // --- Historique de recherche (Ceuc dont leurs code qr on ete enreg.) ---
         function debounce(fn, wait) {
             let t;
             return function(...args) {
@@ -2622,28 +2621,28 @@ Sexe: ${visitor.sexe || 'N/A'}
             });
         });
 
-        // Alarm System
+        // Systhene d'alarme pour les invitations expirées et celles qui expirent bientôt
         function startAlarmSystem() {
             setInterval(function() {
                 const now = new Date();
                 const fiveMinutesLater = new Date(now.getTime() + 5 * 60000);
 
                 visitors.forEach(visitor => {
-                    // Check for expired
+                    // Verifier les invitations expirées (dans la dernière minute)
                     if (now > visitor.endTime && visitor.endTime > new Date(now.getTime() - 1 * 60000)) {
                         showAlarm(`${visitor.name} - Invitation Expirée!`, `L'invitation de ${visitor.name} pour ${visitor.location} a expiré.`);
                     }
 
-                    // Check for expiring soon
+                    // Verifier les invitations qui expirent dans les 5 prochaines minutes
                     if (visitor.endTime <= fiveMinutesLater && visitor.endTime > now) {
                         const minutesLeft = Math.round((visitor.endTime - now) / 60000);
                         showAlarm(`${visitor.name} - Expire Bientôt!`, `L'invitation expire dans ${minutesLeft} minutes.`, 'warning');
                     }
                 });
-            }, 30000); // Check every 30 seconds
+            }, 30000); // Verifier toutes les 30 secondes
         }
 
-        // Show Alarm
+        // Afficher l'alarme
         function showAlarm(title, message, type = 'danger') {
             const notification = document.getElementById('alarmNotification');
             const details = document.getElementById('alarmDetails');
@@ -2664,16 +2663,16 @@ Sexe: ${visitor.sexe || 'N/A'}
             }, 8000);
         }
 
-        // Close Alarm
+        // Fermer l'alarme
         function closeAlarm() {
             const notification = document.getElementById('alarmNotification');
             notification.classList.remove('active');
             notification.classList.remove('alarm-active');
         }
 
-        // Play Sound
+        // Jouer un son pour les différentes actions (succès, refus, alarme)
         function playSound(type) {
-            // Create a simple beep using Web Audio API
+            // Utiliser l'API Web Audio pour générer des sons simples sans dépendre de fichiers externes
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
