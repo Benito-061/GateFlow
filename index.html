@@ -1317,6 +1317,40 @@
         </div>
     </div>
 
+    <!-- Password protection modal for Create tab -->
+    <div id="createPasswordModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🔐 Accès - Ajouter un Rendez-vous</h2>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <input id="createPasswordInput" type="password" placeholder="Mot de passe" style="padding:10px;border:1px solid var(--border);border-radius:8px;" />
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="closeCreatePasswordModal()">Annuler</button>
+                    <button class="btn btn-primary" onclick="verifyCreatePassword()">Accéder</button>
+                </div>
+                <div id="createPasswordMessage" style="color:var(--danger);display:none;margin-top:6px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password protection modal for Ceremony tab -->
+    <div id="ceremonyPasswordModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🔐 Accès - Ajouter une Cérémonie</h2>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <input id="ceremonyPasswordInput" type="password" placeholder="Mot de passe" style="padding:10px;border:1px solid var(--border);border-radius:8px;" />
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="closeCeremonyPasswordModal()">Annuler</button>
+                    <button class="btn btn-primary" onclick="verifyCeremonyPassword()">Accéder</button>
+                </div>
+                <div id="ceremonyPasswordMessage" style="color:var(--danger);display:none;margin-top:6px;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Rapport journalier -->
     <div id="reportModal" class="modal">
         <div class="modal-content modal-content-large">
@@ -1423,7 +1457,21 @@
         }
 
         // Onglet de changement
+        const PROTECTED_PASSWORD = 'Benito2003';
+        let createTabUnlocked = false;
+        let ceremonyTabUnlocked = false;
+
         function switchTab(tabName, buttonElement) {
+            // Check password protection for create and ceremonie tabs
+            if (tabName === 'create' && !createTabUnlocked) {
+                document.getElementById('createPasswordModal').style.display = 'flex';
+                return;
+            }
+            if (tabName === 'ceremonie' && !ceremonyTabUnlocked) {
+                document.getElementById('ceremonyPasswordModal').style.display = 'flex';
+                return;
+            }
+
             // Supp class active de tous les onglets et boutons
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
@@ -1442,6 +1490,57 @@
             // Actualiser les donnees si on retourne au dashboard ou a l'historique
             if (tabName === 'dashboard') updateDashboard();
             if (tabName === 'history') updateAccessLog();
+        }
+
+        // Password modal functions
+        function verifyCreatePassword() {
+            const pwd = document.getElementById('createPasswordInput').value;
+            const msg = document.getElementById('createPasswordMessage');
+            if (pwd === PROTECTED_PASSWORD) {
+                createTabUnlocked = true;
+                document.getElementById('createPasswordModal').style.display = 'none';
+                document.getElementById('createPasswordInput').value = '';
+                // Switch to create tab
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.getElementById('create').classList.add('active');
+                const btn = document.querySelector('[onclick*="switchTab(\'create\'"]');
+                if (btn) btn.classList.add('active');
+            } else {
+                msg.style.display = 'block';
+                msg.textContent = 'Mot de passe incorrect';
+            }
+        }
+
+        function closeCreatePasswordModal() {
+            document.getElementById('createPasswordModal').style.display = 'none';
+            document.getElementById('createPasswordInput').value = '';
+            document.getElementById('createPasswordMessage').style.display = 'none';
+        }
+
+        function verifyCeremonyPassword() {
+            const pwd = document.getElementById('ceremonyPasswordInput').value;
+            const msg = document.getElementById('ceremonyPasswordMessage');
+            if (pwd === PROTECTED_PASSWORD) {
+                ceremonyTabUnlocked = true;
+                document.getElementById('ceremonyPasswordModal').style.display = 'none';
+                document.getElementById('ceremonyPasswordInput').value = '';
+                // Switch to ceremonie tab
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.getElementById('ceremonie').classList.add('active');
+                const btn = document.querySelector('[onclick*="switchTab(\'ceremonie\'"]');
+                if (btn) btn.classList.add('active');
+            } else {
+                msg.style.display = 'block';
+                msg.textContent = 'Mot de passe incorrect';
+            }
+        }
+
+        function closeCeremonyPasswordModal() {
+            document.getElementById('ceremonyPasswordModal').style.display = 'none';
+            document.getElementById('ceremonyPasswordInput').value = '';
+            document.getElementById('ceremonyPasswordMessage').style.display = 'none';
         }
 
         // Fonction de la camera pour la capture de photo du visiteur
@@ -2858,4 +2957,3 @@ Sexe: ${visitor.sexe || 'N/A'}
     </script>
 </body>
 </html>
-
