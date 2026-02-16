@@ -920,7 +920,7 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">🎫</div>
-                    QR Pass Manager
+                    QR Access Manager
                 </div>
                 <div class="nav-tabs">
                     <button class="nav-tab active" onclick="switchTab('dashboard', this)">📊 Tableau de bord</button>
@@ -966,8 +966,8 @@
             </div>
 
             <div class="main-content" style="margin-top: 20px;">
-                <button class="btn btn-primary" onclick="showDailyReport()" style="width: 100%; margin-bottom: 15px;">
-                    📊 Voir le Bilan Journalier
+                <button class="btn btn-primary" onclick="showMonthlyReport()" style="width: 100%; margin-bottom: 15px;">
+                    📊 Voir le Bilan Mensuel
                 </button>
                 <button class="btn btn-danger" onclick="resetInvitations()" style="width: 100%;">
                     🔄 Réinitialiser les Invitations
@@ -988,18 +988,18 @@
 
                         <div class="form-group">
                             <label for="visitorEmail">Email</label>
-                            <input type="email" id="visitorEmail" required placeholder="benito@example.com">
+                            <input type="email" id="visitorEmail" placeholder="benito@example.com">
                         </div>
 
                         <div class="form-group">
                             <label for="visitorPhone">Téléphone</label>
-                            <input type="tel" id="visitorPhone" placeholder="+243 991 048 061">
+                            <input type="tel" id="visitorPhone" required placeholder="+243 991 048 061">
                         </div>
 
                         <div class="form-group">
                             <label for="visitorSex">Sexe</label>
                             <select id="visitorSex" required>
-                                <option value="">-- Sélectionner --</option>
+                                 <option value=""> -- Sélectionner -- </option>
                                 <option value="Masculin">Masculin</option>
                                 <option value="Féminin">Féminin</option>
                             
@@ -1008,24 +1008,20 @@
                         <div class="form-group">
                             <label for="visitorType">Type de Rendez-vous</label>
                             <select id="visitorType" required>
-                                <option value="">-- Sélectionner --</option>
+                                 <option value="">-- Sélectionner --</option>
                                 <option value="visiteur">Rendez-vous Entreprise</option>
                                 <option value="Rendez-vous medical">Rendez-vous Medical</option>
                                 <option value="participant">Participant Événement</option>
-                                <option value="etudiant">Étudiant</option>
                                 <option value="invite">Invité</option>
                                 <option value="prestataire">Prestataire</option>
+                                <option value="salle_de_sport">Salle de sport</option>
+                                <option value="visiteur">Visiteur</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="visitorLocation">Lieu d'Accès</label>
                             <input type="text" id="visitorLocation" required placeholder="Ex: Bâtiment A, Étage 3">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="visitorRequestNumber">Numéro de Demande</label>
-                            <input type="text" id="visitorRequestNumber" required placeholder="Ex: REQ-001, REQ-002">
                         </div>
 
                         <div class="form-group">
@@ -1094,7 +1090,7 @@
         <div id="ceremonie" class="tab-content">
             <div class="main-content">
                 <div class="card">
-                    <h2>Mariage de Uwase Benit & Baraka Isabelle</h2>
+                    <h2>Cérémonie</h2>
                     <form id="createCeremonyForm" onsubmit="createCeremony(event)">
                         <div class="form-group">
                             <label for="cerName">Nom</label>
@@ -1124,12 +1120,14 @@
                                 <option value="Mademoiselle">Mlle.</option>
                                 <option value="Professeur">Proff.</option>
                                 <option value="Honorable">Hon.</option>
-                                <option value="Mgrs">Mgrs.</option>
+                                <option value="Mgr">Mgr.</option>
+                                <option value="Ingenieur">Ingenieur.</option>
+                                <option value="Docteur">Docteur.</option>
                             </select>
 
                              <div class="form-group">
                             <label for="cerPlace">Place Attitrée</label>
-                            <input type="text" id="cerPlace" placeholder="Ex: Place VIP, Place Or...">
+                            <input type="text" id="cerPlace" required placeholder="Ex: Place VIP, Place Or...">
                         </div>
                         <div class="form-group">
                             <label for="cerCapacity">Nombre de personnes par invitation</label>
@@ -1163,7 +1161,7 @@
 
                         <div class="form-group" id="cerFamily2Group" style="display: none;">
                             <label for="cerFamily2">La Famille</label>
-                            <input type="text" id="cerFamily2" placeholder="Nom de la deuxième famille">
+                            <input type="text" id="cerFamily2" required placeholder="Nom de la deuxième famille">
                         </div>
 
                         <div class="form-group">
@@ -1177,22 +1175,22 @@
                             
                             <div class="form-group">
                                 <label for="cerEglise">Église</label>
-                                <input type="text" id="cerEglise" placeholder="Ex: Cathédrale Saint-Paul">
+                                <input type="text" id="cerEglise" required placeholder="Ex: Cathédrale Saint-Paul">
                             </div>
 
                             <div class="form-group">
                                 <label for="cerEgliseAdresse">Adresse de l'Église</label>
-                                <input type="text" id="cerEgliseAdresse" placeholder="Ex: Boulevard du Roi, Kinshasa">
+                                <input type="text" id="cerEgliseAdresse" required placeholder="Ex: Boulevard du Roi, Kinshasa">
                             </div>
 
                             <div class="form-group">
                                 <label for="cerCommune">Commune</label>
-                                <input type="text" id="cerCommune" placeholder="Ex: Commune de Kalamu">
+                                <input type="text" id="cerCommune" required placeholder="Ex: Commune de Kalamu">
                             </div>
 
                             <div class="form-group">
                                 <label for="cerPhotographe">Prise de Vue (Photographe/Vidéographe)</label>
-                                <input type="text" id="cerPhotographe" placeholder="Ex: Studio La Vie, Contact: +243 991...">
+                                <input type="text" id="cerPhotographe" required placeholder="Ex: Studio La Vie, Contact: +243 991...">
                             </div>
 
                             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -1355,7 +1353,7 @@
     <div id="reportModal" class="modal">
         <div class="modal-content modal-content-large">
             <div class="modal-header">
-                <h2 class="modal-title">📊 Bilan Journalier</h2>
+                <h2 class="modal-title">📊 Bilan Mensuel</h2>
                 <button class="modal-close" onclick="closeReportModal()">✕</button>
             </div>
             <div id="reportContent" style="max-height: 70vh; overflow-y: auto;"></div>
@@ -2917,9 +2915,9 @@ Sexe: ${visitor.sexe || 'N/A'}
             oscillator.stop(audioContext.currentTime + 0.3);
         }
 
-        // Rapport journalier
-        function showDailyReport() {
-            document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Journalier</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + visitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() > v.endTime).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + accessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
+        // Rapport mensuel
+        function showMonthlyReport() {
+            document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Mensuel</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + visitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() > v.endTime).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + accessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
             document.getElementById('reportModal').classList.add('active');
         }
 
@@ -2928,7 +2926,7 @@ Sexe: ${visitor.sexe || 'N/A'}
         }
 
         function downloadReport() {
-            let csv = 'BILAN JOURNALIER\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length;
+            let csv = 'BILAN MENSUEL\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length;
             const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
