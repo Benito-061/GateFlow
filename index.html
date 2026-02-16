@@ -966,8 +966,8 @@
             </div>
 
             <div class="main-content" style="margin-top: 20px;">
-                <button class="btn btn-primary" onclick="showMonthlyReport()" style="width: 100%; margin-bottom: 15px;">
-                    📊 Voir le Bilan Mensuel
+                <button class="btn btn-primary" onclick="showDailyReport()" style="width: 100%; margin-bottom: 15px;">
+                    📊 Voir le Bilan Journalier 
                 </button>
                 <button class="btn btn-danger" onclick="resetInvitations()" style="width: 100%;">
                     🔄 Réinitialiser les Invitations
@@ -1353,7 +1353,7 @@
     <div id="reportModal" class="modal">
         <div class="modal-content modal-content-large">
             <div class="modal-header">
-                <h2 class="modal-title">📊 Bilan Mensuel</h2>
+                <h2 class="modal-title">📊 Bilan Journalier</h2>
                 <button class="modal-close" onclick="closeReportModal()">✕</button>
             </div>
             <div id="reportContent" style="max-height: 70vh; overflow-y: auto;"></div>
@@ -1710,19 +1710,19 @@
                 id: 'VIS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                 quickCode: quickCode,
                 name: document.getElementById('visitorName').value,
-                    sexe: document.getElementById('visitorSex').value,
+                sexe: document.getElementById('visitorSex').value,
                 email: document.getElementById('visitorEmail').value,
                 phone: document.getElementById('visitorPhone').value,
                 type: document.getElementById('visitorType').value,
                 location: document.getElementById('visitorLocation').value,
-                requestNumber: document.getElementById('visitorRequestNumber').value,
                 service: document.getElementById('visitorService').value,
                 startTime: new Date(document.getElementById('startDateTime').value),
                 endTime: new Date(document.getElementById('endDateTime').value),
                 notes: document.getElementById('visitorNotes').value,
                 createdAt: new Date(),
                 scans: [],
-                photo: currentPhotoCanvas ? currentPhotoCanvas.toDataURL('image/jpeg', 0.9) : null
+                photo: currentPhotoCanvas ? currentPhotoCanvas.toDataURL('image/jpeg', 0.9) : null,
+                category: 'visitor'
             };
 
             visitors.push(visitor);
@@ -1925,12 +1925,11 @@
 
             const qrContainer = document.getElementById(qrCodeId);
             if (!qrContainer) return;
-            qrContainer.innerHTML = '';
 
+            qrContainer.innerHTML = '';
             currentQRCode = visitor;
 
             try {
-                qrContainer.innerHTML = '';
                 if (typeof QRCode === 'undefined') {
                     throw new Error('QRCode library not loaded');
                 }
@@ -1943,10 +1942,12 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
 
-                document.getElementById(nameId).textContent = visitor.name;
+                const nameEl = document.getElementById(nameId);
+                if (nameEl) nameEl.textContent = visitor.name;
                 const sexEl = document.getElementById(sexId);
                 if (sexEl) sexEl.textContent = visitor.sexe || 'N/A';
-                document.getElementById(quickId).textContent = visitor.quickCode;
+                const quickEl = document.getElementById(quickId);
+                if (quickEl) quickEl.textContent = visitor.quickCode;
 
                 if (isCer) {
                     const typeEl = document.getElementById('qrCerType');
@@ -1963,10 +1964,12 @@
                 const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(visitor.id)}`;
                 qrContainer.innerHTML = `<img src="${apiUrl}" alt="QR Code" style="width: 256px; height: 256px; border-radius: 8px;">`;
 
-                document.getElementById(nameId).textContent = visitor.name;
-                const sexEl = document.getElementById(sexId);
-                if (sexEl) sexEl.textContent = visitor.sexe || 'N/A';
-                document.getElementById(quickId).textContent = visitor.quickCode;
+                const nameEl = document.getElementById(nameId);
+                if (nameEl) nameEl.textContent = visitor.name;
+                const sexEl2 = document.getElementById(sexId);
+                if (sexEl2) sexEl2.textContent = visitor.sexe || 'N/A';
+                const quickEl = document.getElementById(quickId);
+                if (quickEl) quickEl.textContent = visitor.quickCode;
 
                 if (isCer) {
                     const typeEl = document.getElementById('qrCerType');
@@ -2915,18 +2918,18 @@ Sexe: ${visitor.sexe || 'N/A'}
             oscillator.stop(audioContext.currentTime + 0.3);
         }
 
-        // Rapport mensuel
-        function showMonthlyReport() {
-            document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Mensuel</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + visitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + visitors.filter(v => new Date() > v.endTime).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + accessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
+        // Rapport Journalier
+        function showDailyReport() {
+            const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+            const dailyVisitors = visitors.filter(v => v.date === today);
+            const dailyAccessLog = accessLog.filter(log => log.date === today);
+
+            document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Journalier</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => new Date() > v.endTime).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + dailyAccessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
             document.getElementById('reportModal').classList.add('active');
         }
 
-        function closeReportModal() {
-            document.getElementById('reportModal').classList.remove('active');
-        }
-
         function downloadReport() {
-            let csv = 'BILAN MENSUEL\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length;
+            let csv = 'BILAN JOURNALIER\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length;
             const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
