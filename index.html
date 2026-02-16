@@ -1091,6 +1091,118 @@
             <div class="main-content">
                 <div class="card">
                     <h2>Cérémonie</h2>
+                    
+                    <!-- Section Affichage des Mariés -->
+                    <div id="marriageDisplaySection" style="display: none; margin: 30px 0; padding: 25px; background: linear-gradient(135deg, #ffd6e8 0%, #fff4e6 50%, #e8f5ff 100%); border-radius: 15px; overflow: hidden; position: relative;">
+                        <style>
+                            @keyframes heartBeat {
+                                0%, 100% { transform: scale(1); }
+                                25% { transform: scale(1.1); }
+                                50% { transform: scale(1); }
+                            }
+                            
+                            @keyframes floatUp {
+                                0% { opacity: 1; transform: translateY(0px); }
+                                100% { opacity: 0; transform: translateY(-60px); }
+                            }
+                            
+                            @keyframes shine {
+                                0% { transform: translateX(-100%); }
+                                100% { transform: translateX(100%); }
+                            }
+                            
+                            .marriage-container {
+                                display: flex;
+                                justify-content: space-around;
+                                align-items: center;
+                                gap: 30px;
+                                position: relative;
+                                z-index: 2;
+                            }
+                            
+                            .family-box {
+                                flex: 1;
+                                text-align: center;
+                                padding: 20px;
+                                background: white;
+                                border-radius: 12px;
+                                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                                position: relative;
+                                overflow: hidden;
+                                animation: heartBeat 2s ease-in-out infinite;
+                            }
+                            
+                            .family-box:first-child {
+                                background: linear-gradient(135deg, #ffd6e8 0%, #ffb3d9 100%);
+                            }
+                            
+                            .family-box:last-child {
+                                background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);
+                            }
+                            
+                            .family-label {
+                                font-size: 13px;
+                                color: #666;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                font-weight: 600;
+                                margin-bottom: 10px;
+                            }
+                            
+                            .family-name {
+                                font-size: 28px;
+                                font-weight: 700;
+                                color: #1a1a1a;
+                                word-break: break-word;
+                            }
+                            
+                            .hearts-container {
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                pointer-events: none;
+                            }
+                            
+                            .heart {
+                                position: absolute;
+                                font-size: 20px;
+                                animation: floatUp 3s ease-in forwards;
+                            }
+                            
+                            .separator {
+                                font-size: 30px;
+                                color: #ff69b4;
+                                font-weight: bold;
+                                animation: heartBeat 1.5s ease-in-out infinite;
+                            }
+                            
+                            .confetti {
+                                position: absolute;
+                                width: 10px;
+                                height: 10px;
+                                pointer-events: none;
+                            }
+                        </style>
+                        
+                        <div class="hearts-container" id="heartsContainer"></div>
+                        
+                        <div class="marriage-container">
+                            <div class="family-box">
+                                <div class="family-label">👰 La Famille</div>
+                                <div class="family-name" id="displayFamily1">-</div>
+                            </div>
+                            
+                            <div class="separator">💕</div>
+                            
+                            <div class="family-box">
+                                <div class="family-label">🤵 La Famille</div>
+                                <div class="family-name" id="displayFamily2">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <form id="createCeremonyForm" onsubmit="createCeremony(event)">
                         <div class="form-group">
                             <label for="cerName">Nom</label>
@@ -1172,6 +1284,36 @@
                         <!-- Detail du mariage -->
                         <div id="mariageFields" style="display: none; border: 2px dashed #0ea5e9; padding: 20px; border-radius: 8px; margin: 20px 0;">
                             <h3 style="color: #0ea5e9; margin-top: 0;">📍 Détails du Mariage</h3>
+                            
+                            <!-- Section Affichage des Mariés -->
+                            <div id="brideGroomDisplay" style="margin: 25px 0; padding: 25px; background: linear-gradient(135deg, #fff5f7 0%, #fff9e6 50%, #f0f9ff 100%); border-radius: 15px; overflow: hidden; position: relative; margin-bottom: 25px;">
+                                <div class="hearts-container" id="heartsContainerBrideGroom"></div>
+                                
+                                <div class="marriage-container">
+                                    <div class="family-box" style="background: linear-gradient(135deg, #ffd6e8 0%, #ffb3d9 100%);">
+                                        <div class="family-label">👰 La Mariée</div>
+                                        <div class="family-name" id="displayBrideName">-</div>
+                                    </div>
+                                    
+                                    <div class="separator">💕</div>
+                                    
+                                    <div class="family-box" style="background: linear-gradient(135deg, #b3e5fc 0%, #81d4fa 100%);">
+                                        <div class="family-label">🤵 Le Marié</div>
+                                        <div class="family-name" id="displayGroomName">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Champs pour les noms des mariés -->
+                            <div class="form-group">
+                                <label for="cerBrideName">Nom de la Mariée</label>
+                                <input type="text" id="cerBrideName" placeholder="Ex: Marie Dupont">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cerGroomName">Nom du Marié</label>
+                                <input type="text" id="cerGroomName" placeholder="Ex: Jean Martin">
+                            </div>
                             
                             <div class="form-group">
                                 <label for="cerEglise">Église</label>
@@ -1457,6 +1599,30 @@
         // Onglet de changement
         const CREATE_PASSWORD = 'Benito2003';
         const CEREMONY_PASSWORD = 'Benito061';
+        
+        // Système de détection d'appareil
+        function getDeviceFingerprint() {
+            return btoa(navigator.userAgent + navigator.language + screen.width + 'x' + screen.height);
+        }
+        
+        function validateDeviceAccess() {
+            const currentDevice = getDeviceFingerprint();
+            const storedDevice = localStorage.getItem('deviceFingerprint');
+            
+            if (storedDevice !== currentDevice) {
+                // Nouvel appareil détecté - réinitialiser l'accès
+                localStorage.setItem('deviceFingerprint', currentDevice);
+                localStorage.removeItem('createTabUnlocked');
+                localStorage.removeItem('ceremonyTabUnlocked');
+                console.log('Nouvel appareil détecté - codes d\'accès réinitialisés');
+                return false;
+            }
+            return true;
+        }
+        
+        // Valider l'appareil au chargement
+        validateDeviceAccess();
+        
         let createTabUnlocked = localStorage.getItem('createTabUnlocked') === 'true';
         let ceremonyTabUnlocked = localStorage.getItem('ceremonyTabUnlocked') === 'true';
 
@@ -1844,20 +2010,99 @@
             const cerTypeSelect = document.getElementById('cerType');
             const family2Group = document.getElementById('cerFamily2Group');
             const mariageFields = document.getElementById('mariageFields');
+            const marriageDisplaySection = document.getElementById('marriageDisplaySection');
+            const family1Input = document.getElementById('cerFamily1');
+            const family2Input = document.getElementById('cerFamily2');
+            const displayFamily1 = document.getElementById('displayFamily1');
+            const displayFamily2 = document.getElementById('displayFamily2');
+            const brideNameInput = document.getElementById('cerBrideName');
+            const groomNameInput = document.getElementById('cerGroomName');
+            const displayBrideName = document.getElementById('displayBrideName');
+            const displayGroomName = document.getElementById('displayGroomName');
+            
             if (cerTypeSelect) {
                 cerTypeSelect.addEventListener('change', function() {
                     const type = this.value;
                     family2Group.style.display = (type === 'Mariage' || type === 'Dote') ? 'block' : 'none';
                     mariageFields.style.display = (type === 'Mariage') ? 'block' : 'none';
+                    marriageDisplaySection.style.display = (type === 'Mariage') ? 'block' : 'none';
                     const family2Input = document.getElementById('cerFamily2');
                     if (type === 'Mariage' || type === 'Dote') {
                         family2Input.required = true;
                     } else {
                         family2Input.required = false;
                     }
+                    if (type === 'Mariage') {
+                        generateHearts();
+                        generateHeartsBrideGroom();
+                    }
+                });
+            }
+            
+            // Met à jour les noms des familles en temps réel
+            if (family1Input) {
+                family1Input.addEventListener('input', function() {
+                    if (displayFamily1) displayFamily1.textContent = this.value || '-';
+                });
+            }
+            
+            if (family2Input) {
+                family2Input.addEventListener('input', function() {
+                    if (displayFamily2) displayFamily2.textContent = this.value || '-';
+                });
+            }
+            
+            // Met à jour les noms des mariés en temps réel
+            if (brideNameInput) {
+                brideNameInput.addEventListener('input', function() {
+                    if (displayBrideName) displayBrideName.textContent = this.value || '-';
+                });
+            }
+            
+            if (groomNameInput) {
+                groomNameInput.addEventListener('input', function() {
+                    if (displayGroomName) displayGroomName.textContent = this.value || '-';
                 });
             }
         });
+        
+        // Générateur de cœurs animés
+        function generateHearts() {
+            const container = document.getElementById('heartsContainer');
+            if (!container) return;
+            container.innerHTML = ''; // Nettoyage des anciens cœurs
+            
+            const hearts = ['💕', '💖', '💗', '💝', '✨', '🎉'];
+            for (let i = 0; i < 12; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = '-20px';
+                heart.style.animationDelay = Math.random() * 0.5 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        
+        // Générateur de cœurs animés pour la section des mariés
+        function generateHeartsBrideGroom() {
+            const container = document.getElementById('heartsContainerBrideGroom');
+            if (!container) return;
+            container.innerHTML = ''; // Nettoyage des anciens cœurs
+            
+            const hearts = ['💕', '💖', '💗', '💝', '✨', '🎉'];
+            for (let i = 0; i < 12; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = '-20px';
+                heart.style.animationDelay = Math.random() * 0.5 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
 
         // Tableau pour stocker les evenements horodates du mariage
         let mariageEvents = [];
