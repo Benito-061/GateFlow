@@ -1766,7 +1766,7 @@
         // Mots de passe mis à jour
         const CREATE_PASSWORD = 'Benito993778953'; // Case rendez-vous
         const CEREMONY_PASSWORD = 'B3n1t0995694187'; // Case cérémonie
-        const MONTHLY_PASSWORD = 'B3n1t0995694187-Benito993778953'; // Toute la page
+        const MONTHLY_PASSWORD = 'Benit Uwase2003'; // Verrouillage mensuel
 
         // Système de détection d'appareil
         function getDeviceFingerprint() {
@@ -1776,26 +1776,32 @@
         function validateDeviceAccess() {
             const currentDevice = getDeviceFingerprint();
             const storedDevice = localStorage.getItem('deviceFingerprint');
-
             if (storedDevice !== currentDevice) {
-                // Nouvel appareil détecté - réinitialiser l'accès
+                // Nouvel appareil détecté - réinitialiser l'accès et exiger le mot de passe mensuel
                 localStorage.setItem('deviceFingerprint', currentDevice);
                 localStorage.removeItem('createTabUnlocked');
                 localStorage.removeItem('ceremonyTabUnlocked');
-                console.log('Nouvel appareil détecté - codes d\'accès réinitialisés');
+                localStorage.removeItem(getMonthlyUnlockKey());
+                monthlyLocked = true;
+                document.addEventListener('DOMContentLoaded', showMonthlyModal);
+                console.log('Nouvel appareil détecté - mot de passe mensuel exigé');
                 return false;
             }
             return true;
         }
 
         // Verrouillage mensuel
-        function getMonthKey() {
-            const d = new Date();
-            return d.getFullYear() + '-' + (d.getMonth() + 1);
+        // Nouvelle logique de verrouillage mensuel (30 jours glissants)
+        function getMonthlyUnlockKey() {
+            return 'monthlyUnlockDate';
         }
 
         function isMonthlyUnlocked() {
-            return localStorage.getItem('monthlyUnlocked') === getMonthKey();
+            const unlockDateStr = localStorage.getItem(getMonthlyUnlockKey());
+            if (!unlockDateStr) return false;
+            const unlockDate = new Date(unlockDateStr);
+            const now = new Date();
+            return (now - unlockDate) < (30 * 24 * 60 * 60 * 1000);
         }
 
         function showMonthlyModal() {
@@ -1807,21 +1813,16 @@
             const pwd = document.getElementById('monthlyLockInput').value;
             const msg = document.getElementById('monthlyLockMessage');
             if (pwd === MONTHLY_PASSWORD) {
-                // Mark month as unlocked
-                localStorage.setItem('monthlyUnlocked', getMonthKey());
-                monthlyLocked = false;
-
-                // Démarrer le décompte de 30 jours
+                // Déverrouille pour 30 jours
                 const unlockDate = new Date();
-                localStorage.setItem('monthlyUnlockDate', unlockDate.toISOString());
+                localStorage.setItem(getMonthlyUnlockKey(), unlockDate.toISOString());
+                monthlyLocked = false;
                 updateMonthlyCountdown();
-
-                // IMPORTANT: do NOT unlock per-tab access when monthly unlock is entered.
+                // IMPORTANT: ne pas déverrouiller les sections
                 localStorage.removeItem('createTabUnlocked');
                 localStorage.removeItem('ceremonyTabUnlocked');
                 createTabUnlocked = false;
                 ceremonyTabUnlocked = false;
-
                 document.getElementById('monthlyLockModal').style.display = 'none';
                 document.getElementById('monthlyLockInput').value = '';
                 if (msg) msg.style.display = 'none';
@@ -1842,18 +1843,22 @@
             if (msg) msg.style.display = 'none';
         }
 
-        // Valider l'appareil au chargement
-        validateDeviceAccess();
-
-        // Forcer le verrouillage mensuel au début du mois si besoin
+        // Valider l'appareil au chargement et forcer le verrouillage si nouvel appareil
         let monthlyLocked = !isMonthlyUnlocked();
-        if (monthlyLocked) {
-            // Remove per-tab unlocks when site is monthly-locked
-            localStorage.removeItem('createTabUnlocked');
-            localStorage.removeItem('ceremonyTabUnlocked');
-            // Show modal once DOM is ready
-            document.addEventListener('DOMContentLoaded', showMonthlyModal);
+        function enforceDeviceLock() {
+            const deviceValid = validateDeviceAccess();
+            if (!deviceValid) {
+                monthlyLocked = true;
+                localStorage.removeItem('createTabUnlocked');
+                localStorage.removeItem('ceremonyTabUnlocked');
+                document.addEventListener('DOMContentLoaded', showMonthlyModal);
+            } else if (monthlyLocked) {
+                localStorage.removeItem('createTabUnlocked');
+                localStorage.removeItem('ceremonyTabUnlocked');
+                document.addEventListener('DOMContentLoaded', showMonthlyModal);
+            }
         }
+        enforceDeviceLock();
 
         let createTabUnlocked = localStorage.getItem('createTabUnlocked') === 'true';
         let ceremonyTabUnlocked = localStorage.getItem('ceremonyTabUnlocked') === 'true';
