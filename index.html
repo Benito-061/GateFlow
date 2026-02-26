@@ -1564,6 +1564,12 @@
     <script>
         // Stockage de données 
         let visitors = JSON.parse(localStorage.getItem('visitors')) || [];
+        // Correction : convertir startTime et endTime en objets Date
+        visitors = visitors.map(v => {
+            if (v.startTime && !(v.startTime instanceof Date)) v.startTime = new Date(v.startTime);
+            if (v.endTime && !(v.endTime instanceof Date)) v.endTime = new Date(v.endTime);
+            return v;
+        });
         let accessLog = JSON.parse(localStorage.getItem('accessLog')) || [];
         let currentQRCode = null;
         let currentPhotoCanvas = null;
@@ -2813,9 +2819,12 @@
             }
 
             const now = new Date();
-            const isValid = now >= visitor.startTime && now <= visitor.endTime;
-            const isComing = now < visitor.startTime;
-            const isExpired = now > visitor.endTime;
+            // S'assurer que startTime et endTime sont bien des objets Date
+            const startTime = (visitor.startTime instanceof Date) ? visitor.startTime : new Date(visitor.startTime);
+            const endTime = (visitor.endTime instanceof Date) ? visitor.endTime : new Date(visitor.endTime);
+            const isValid = now >= startTime && now <= endTime;
+            const isComing = now < startTime;
+            const isExpired = now > endTime;
             const isDuplicate = visitor.category === 'ceremonie' && visitor.scans && visitor.scans.length > 0;
 
             // Declanchement de l'alarme de duplication si necessaire
@@ -3077,18 +3086,29 @@
             visitors.forEach(v => {
                 if (v.category === 'ceremonie') {
                     if (now >= v.startTime && now <= v.endTime) {
-                        ceremonyCount++;
+                        const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime);
+                        const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                        if (now >= startTime && now <= endTime) {
+                            ceremonyCount++;
+                        }
                     }
                 }
 
                 if (now >= v.startTime && now <= v.endTime) {
-                    activeCount++;
-                    activeHtml.push(createVisitorHTML(v, false));
+                    const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime);
+                    const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                    if (now >= startTime && now <= endTime) {
+                        activeCount++;
+                        activeHtml.push(createVisitorHTML(v, false));
+                    }
                 }
 
                 if (now <= v.endTime && v.endTime <= oneHourLater) {
-                    expiringCount++;
-                    expiringHtml.push(createVisitorHTML(v, true));
+                    const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                    if (now <= endTime && endTime <= oneHourLater) {
+                        expiringCount++;
+                        expiringHtml.push(createVisitorHTML(v, true));
+                    }
                 }
             });
 
@@ -3359,11 +3379,13 @@ Sexe: ${visitor.sexe || 'N/A'}
             });
 
             document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Journalier</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => new Date() > v.endTime).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + dailyAccessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
+            // Correction : conversion des dates
+            document.getElementById('reportContent').innerHTML = '<div class="report-section"><div class="report-title">📊 Bilan Journalier</div><div class="report-stats"><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.length + '</div><div class="report-stat-label">Invitations Totales</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => { const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime); const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime); return new Date() >= startTime && new Date() <= endTime; }).length + '</div><div class="report-stat-label">Actives</div></div><div class="report-stat"><div class="report-stat-value">' + dailyVisitors.filter(v => { const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime); return new Date() > endTime; }).length + '</div><div class="report-stat-label">Expirées</div></div><div class="report-stat"><div class="report-stat-value">' + dailyAccessLog.length + '</div><div class="report-stat-label">Scans Total</div></div></div></div>';
             document.getElementById('reportModal').classList.add('active');
         }
 
         function downloadReport() {
-            let csv = 'BILAN JOURNALIER\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => new Date() >= v.startTime && new Date() <= v.endTime).length;
+            let csv = 'BILAN JOURNALIER\nTotal,' + visitors.length + '\nActifs,' + visitors.filter(v => { const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime); const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime); return new Date() >= startTime && new Date() <= endTime; }).length;
             const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -3403,16 +3425,27 @@ Sexe: ${visitor.sexe || 'N/A'}
 
             if (type === 'active') {
                 title = '📌 Rendez-vous Actifs';
-                filteredVisitors = visitors.filter(v => now >= v.startTime && now <= v.endTime && v.category !== 'ceremonie');
+                filteredVisitors = visitors.filter(v => {
+                    const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime);
+                    const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                    return now >= startTime && now <= endTime && v.category !== 'ceremonie';
+                });
             } else if (type === 'created') {
                 title = '📋 Total Créés';
                 filteredVisitors = visitors.filter(v => v.category !== 'ceremonie');
             } else if (type === 'expiring') {
                 title = '⏰ Expirations Proches';
-                filteredVisitors = visitors.filter(v => now <= v.endTime && v.endTime <= oneHourLater);
+                filteredVisitors = visitors.filter(v => {
+                    const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                    return now <= endTime && endTime <= oneHourLater;
+                });
             } else if (type === 'ceremony') {
                 title = '🎉 Cérémonies Actives';
-                filteredVisitors = visitors.filter(v => v.category === 'ceremonie' && now >= v.startTime && now <= v.endTime);
+                filteredVisitors = visitors.filter(v => {
+                    const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime);
+                    const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
+                    return v.category === 'ceremonie' && now >= startTime && now <= endTime;
+                });
             }
 
             document.getElementById('detailsListTitle').textContent = title;
@@ -3478,12 +3511,12 @@ Sexe: ${visitor.sexe || 'N/A'}
             ];
             // Ajout dynamique : place attitrée ou code rapide
             if (visitor.category === 'ceremonie') {
-                if (visitor.cerPlace) {
-                    fields.splice(6, 0, { key: 'cerPlace', label: 'Place Attitrée' });
-                }
-                if (visitor.cerCapacity) {
-                    fields.splice(7, 0, { key: 'cerCapacity', label: 'Nombre de Personnes' });
-                }
+                // Pour cérémonie : afficher la place attitrée et le nombre de personnes, PAS le code rapide
+                // On retire le champ quickCode s'il existe
+                fields = fields.filter(f => f.key !== 'quickCode');
+                // Ajoute la place attitrée et le nombre de personnes à la bonne position
+                fields.splice(6, 0, { key: 'cerPlace', label: 'Place Attitrée' });
+                fields.splice(7, 0, { key: 'cerCapacity', label: 'Nombre de Personnes' });
             } else if (visitor.quickCode) {
                 fields.splice(6, 0, { key: 'quickCode', label: 'Code Rapide' });
             }
