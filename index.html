@@ -1077,6 +1077,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="visitorCapacity">Nombre de personnes par invitation</label>
+                            <input type="number" id="visitorCapacity" min="1" value="1" placeholder="Nombre de personnes">
+                        </div>
+
+                        <div class="form-group">
                             <label for="startDateTime">Date & Heure de Début</label>
                             <input type="datetime-local" id="startDateTime" required>
                         </div>
@@ -1290,10 +1295,13 @@
                             <input type="text" id="cerPlace" required placeholder="Ex: Place VIP, Place Or...">
                         </div>
                         <div class="form-group">
-                            <label for="cerCapacity">Nombre de personnes par invitation</label>
+                            <label for="cerCapacity">Nombre de personnes par invitation/Delegation </label>
                             <select id="cerCapacity" required>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                 <option value="15">15</option>
                             </select>
                         </div>
 
@@ -1325,7 +1333,7 @@
 
                         <div class="form-group">
                             <label for="cerProgram">Programme de la Cérémonie</label>
-                            <textarea id="cerProgram" required placeholder="Détail des activités et horaires (ex: 09h00 - Arrivée des invités, 09h30 - Début de la cérémonie...)"></textarea>
+                            <textarea id="cerProgram" placeholder="Détail des activités et horaires (ex: 09h00 - Arrivée des invités, 09h30 - Début de la cérémonie...)"></textarea>
                         </div>
 
                         <!-- Detail du mariage -->
@@ -1512,7 +1520,7 @@
                 <h2 class="modal-title">🔒 Verrouillage Mensuel</h2>
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-                <p id="monthlyLockInfo">Seules les sections « Créer un rendez-vous » et « Cérémonie » sont verrouillées ce mois-ci. Entrez le mot de passe pour y accéder.</p>
+                <p id="monthlyLockInfo">Seules les sections « Créer un rendez-vous » et « Cérémonie » sont verrouillées ce mois-ci. Entrez le mot de passe pour y accéder.</p>
                 <input id="monthlyLockInput" type="password" placeholder=" Veillez entrez le mot de passe " style="padding:10px;border:1px solid var(--border);border-radius:8px;" />
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
                     <button class="btn btn-secondary" onclick="closeMonthlyLockModal()">Annuler</button>
@@ -1728,12 +1736,6 @@
                 cerEndInput.value = later.toISOString().slice(0, 16);
             }
         }
-
-        // Onglet de changement
-        // Les mots de passe pour les sections de création ont été supprimés
-        const CREATE_PASSWORD = ''; // aucun mot de passe
-        const CEREMONY_PASSWORD = ''; // aucun mot de passe
-        const MONTHLY_PASSWORD = ''; // Verrouillage mensuel
 
         // Système de détection d'appareil
         function getDeviceFingerprint() {
@@ -2059,6 +2061,7 @@
                 type: document.getElementById('visitorType').value,
                 location: document.getElementById('visitorLocation').value,
                 service: document.getElementById('visitorService').value,
+                capacity: parseInt(document.getElementById('visitorCapacity').value) || 1,
                 startTime: new Date(document.getElementById('startDateTime').value),
                 endTime: new Date(document.getElementById('endDateTime').value),
                 notes: document.getElementById('visitorNotes').value,
@@ -2159,6 +2162,8 @@
 
             // Ajouter les details specifiques au mariage si le type de ceremonie est "Mariage"
             if (cerType === 'Mariage') {
+                visitor.brideName = document.getElementById('cerBrideName')?.value || '';
+                visitor.groomName = document.getElementById('cerGroomName')?.value || '';
                 visitor.mariage = {
                     eglise: document.getElementById('cerEglise')?.value || '',
                     egliseAdresse: document.getElementById('cerEgliseAdresse')?.value || '',
@@ -3473,7 +3478,7 @@ Sexe: ${visitor.sexe || 'N/A'}
                     return now <= endTime && endTime <= oneHourLater;
                 });
             } else if (type === 'ceremony') {
-                title = '🎉 Cérémonies Actives';
+                title = '🎉 Cérémonies ';
                 filteredVisitors = visitors.filter(v => {
                     const startTime = (v.startTime instanceof Date) ? v.startTime : new Date(v.startTime);
                     const endTime = (v.endTime instanceof Date) ? v.endTime : new Date(v.endTime);
@@ -3541,19 +3546,34 @@ Sexe: ${visitor.sexe || 'N/A'}
                 { key: 'type', label: 'Type' },
                 { key: 'location', label: 'Lieu' },
                 { key: 'service', label: 'Service' },
+            ];
+            // ajout conditionnel du nombre de personnes si fourni
+            // add capacity for non-ceremony entries (ceremonies handle their own field)
+            if (visitor.capacity && visitor.category !== 'ceremonie') {
+                fields.push({ key: 'capacity', label: 'Nombre de personnes' });
+            }
+            fields = fields.concat([
                 { key: 'requestNumber', label: 'Numéro de Demande' },
                 { key: 'scans', label: 'Total Scans', custom: v => v.scans && v.scans.length ? v.scans.length : null },
                 { key: 'startTime', label: 'Début', custom: v => v.startTime ? new Date(v.startTime).toLocaleString('fr-FR') : null },
                 { key: 'endTime', label: 'Fin', custom: v => v.endTime ? new Date(v.endTime).toLocaleString('fr-FR') : null }
-            ];
+            ]);
             // Ajout dynamique : place attitrée ou code rapide
             if (visitor.category === 'ceremonie') {
                 // Pour cérémonie : afficher la place attitrée et le nombre de personnes, PAS le code rapide
                 // On retire le champ quickCode s'il existe
                 fields = fields.filter(f => f.key !== 'quickCode');
-                // Ajoute la place attitrée et le nombre de personnes à la bonne position
-                fields.splice(6, 0, { key: 'cerPlace', label: 'Place Attitrée' });
-                fields.splice(7, 0, { key: 'cerCapacity', label: 'Nombre de Personnes' });
+                // Ajoute la place attitrée (propriété "place" dans le modèle) et le nombre de personnes à la bonne position
+                fields.splice(6, 0, { key: 'place', label: 'Place Attitrée' });
+                fields.splice(7, 0, { key: 'capacity', label: 'Nombre de Personnes' });
+                // Ajoute les noms des mariés si présents
+                if (visitor.brideName) {
+                    fields.splice(8, 0, { key: 'brideName', label: 'Nom de la Mariée' });
+                }
+                if (visitor.groomName) {
+                    const insertPos = visitor.brideName ? 9 : 8;
+                    fields.splice(insertPos, 0, { key: 'groomName', label: 'Nom du Marié' });
+                }
             } else if (visitor.quickCode) {
                 fields.splice(6, 0, { key: 'quickCode', label: 'Code Rapide' });
             }
@@ -3568,33 +3588,61 @@ Sexe: ${visitor.sexe || 'N/A'}
                     font-family: 'Segoe UI', Arial, sans-serif;
                     padding: 0;
                     margin: 0;
-                    background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 100%);
+                    background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #e0f2fe 100%);
+                    animation: gradientAnimation 8s infinite alternate;
+                }
+                @keyframes gradientAnimation {
+                    0% { background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #e0f2fe 100%); }
+                    50% { background: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 50%, #f3e8ff 100%); }
+                    100% { background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 50%, #e0f2fe 100%); }
                 }
                 .print-card {
-                    max-width: 350px;
+                    max-width: 360px;
                     margin: 40px auto;
-                    background: #fff;
-                    border-radius: 20px;
-                    box-shadow: 0 8px 32px rgba(14,165,233,0.18);
-                    border: 4px solid #38bdf8;
-                    padding: 24px 24px 16px 24px;
+                    background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+                    border-radius: 32px;
+                    box-shadow: 0 8px 48px rgba(56,189,248,0.18);
+                    border: 6px solid transparent;
+                    background-clip: padding-box;
                     position: relative;
-                    transition: box-shadow 0.3s;
+                    padding: 28px 28px 20px 28px;
+                    transition: box-shadow 0.3s, transform 0.3s;
+                    animation: pulseBorder 4s infinite;
                 }
                 .print-card:hover {
-                    box-shadow: 0 12px 40px rgba(14,165,233,0.28);
+                    box-shadow: 0 16px 60px rgba(56,189,248,0.4);
+                    transform: scale(1.04);
                 }
+                @keyframes pulseBorder {
+                    0%,100% { border-color: #38bdf8; }
+                    50% { border-color: #a21caf; }
+                }
+                /* confetti animation */
+                @keyframes floatUp {
+                    0% { opacity: 0; transform: translateY(0) scale(0.8); }
+                    50% { opacity: 1; }
+                    100% { opacity: 0; transform: translateY(-80px) scale(1); }
+                }
+                .print-card::before, .print-card::after {
+                    content: '🎉💐';
+                    position: absolute;
+                    font-size: 24px;
+                    top: 10px;
+                    animation: floatUp 2s infinite;
+                    opacity: 0;
+                }
+                .print-card::after { left: 90%; animation-delay: 1s; }
                 .print-icon {
                     position: absolute;
                     top: -22px;
                     left: 50%;
                     transform: translateX(-50%);
-                    font-size: 38px;
-                    color: #38bdf8;
+                    font-size: 42px;
+                    color: #a21caf;
                     background: #fff;
                     border-radius: 50%;
-                    box-shadow: 0 2px 12px rgba(14,165,233,0.12);
-                    padding: 6px;
+                    box-shadow: 0 2px 12px rgba(162,28,175,0.16);
+                    padding: 8px;
                     z-index: 2;
                 }
                 .print-header {
@@ -3623,12 +3671,21 @@ Sexe: ${visitor.sexe || 'N/A'}
                     box-shadow: 0 2px 8px rgba(162,28,175,0.08);
                 }
                 .print-title {
-                    font-size: 22px;
-                    font-weight: 700;
-                    color: #38bdf8;
+                    font-size: 24px;
+                    font-weight: 900;
+                    color: #a21caf;
                     margin: 0;
-                    letter-spacing: 1.5px;
-                    text-shadow: 0 1px 2px #e0f2fe;
+                    letter-spacing: 2px;
+                    text-shadow: 0 1px 2px #fde68a;
+                    font-family: 'Brush Script MT', cursive;
+                    position: relative;
+                }
+                .print-title::after {
+                    content: '— ✨ —';
+                    display: block;
+                    margin-top: 4px;
+                    color: #fde68a;
+                    font-size: 14px;
                 }
                 .print-info-grid {
                     display: grid;
@@ -3637,16 +3694,24 @@ Sexe: ${visitor.sexe || 'N/A'}
                     margin-bottom: 12px;
                 }
                 .print-info-item {
-                    background: linear-gradient(90deg, #e0f2fe 0%, #f3e8ff 100%);
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    border-left: 5px solid #38bdf8;
-                    font-size: 15px;
+                    background: linear-gradient(90deg, #fefce8 0%, #ffedd5 100%);
+                    padding: 12px 14px;
+                    border-radius: 12px;
+                    border-left: 6px solid #a21caf;
+                    font-size: 16px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    box-shadow: 0 1px 4px rgba(14,165,233,0.06);
-                    transition: background 0.2s;
+                    box-shadow: 0 2px 6px rgba(162,28,175,0.08);
+                    transition: background 0.2s, transform 0.2s;
+                }
+                .print-info-item:hover {
+                    background: linear-gradient(90deg, #bae6fd 0%, #e9d5ff 100%);
+                    transform: translateX(4px);
+                }
+                .print-info-label::before {
+                    content: '🎯 ';
+                    margin-right: 4px;
                 }
                 .print-info-item:hover {
                     background: linear-gradient(90deg, #bae6fd 0%, #e9d5ff 100%);
@@ -3673,10 +3738,30 @@ Sexe: ${visitor.sexe || 'N/A'}
                     letter-spacing: 0.5px;
                     background: linear-gradient(90deg, #e0f2fe 0%, #f3e8ff 100%);
                     border-radius: 0 0 16px 16px;
+                    position: relative;
                 }
-            </style></head><body>`);
+                .decoration {
+                    position: absolute;
+                    font-size: 26px;
+                    opacity: 0.7;
+                }
+                .decoration.top-left { top: -14px; left: -14px; }
+                .decoration.top-right { top: -14px; right: -14px; transform: rotate(90deg); }
+                .decoration.bottom-left { bottom: -14px; left: -14px; transform: rotate(270deg); }
+                .decoration.bottom-right { bottom: -14px; right: -14px; transform: rotate(180deg); }
+                .print-footer::before {
+                    content: '✨ QR-Access | Nous contacter : +243 991 048 061 ✨';
+                    display: block;
+                    font-size: 11px;
+                    color: #0f172a;
+                    margin-bottom: 4px;
+                }            </style></head><body>`);
             printWindow.document.write(`
+                <div class="company-info" style="text-align:center;font-size:12px;color:#6b7280;margin-bottom:8px;">
+                    QR-Access<br>+243 991 048 061
+                </div>
                 <div class="print-card">
+                   
                     <div class="print-icon"></div>
                     <div class="print-header">
                         <img class="print-photo" src="${visitor.photo ? visitor.photo : ''}" alt="Photo">
@@ -3704,14 +3789,16 @@ Sexe: ${visitor.sexe || 'N/A'}
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(ceremony.id)}`;
             let infoGrid = '';
             const fields = [
-                { key: 'sexe', label: 'Nom' },
-                { key: 'phone', label: 'Téléphone' },
-                { key: 'email', label: 'Email' },
-                { key: 'type', label: 'Type' },
-                { key: 'location', label: 'Lieu' },
-                { key: 'cerPlace', label: 'Place Attitrée' },
+                { key: 'sexe', label: 'Nom:' },
+                { key: 'phone', label: 'Téléphone:' },
+                { key: 'email', label: 'Email:' },
+                { key: 'type', label: 'Type:' },
+                { key: 'location', label: 'Lieu:' },
+                { key: 'place', label: 'Place Attitrée:' },
+                { key: 'capacity', label: 'Nombre de Personnes:' },
+                { key: 'brideName', label: 'Nom de la Mariée:' },
+                { key: 'groomName', label: 'Nom du Marié:' },
                 { key: 'scans', label: 'Total Scans', custom: v => v.scans && v.scans.length ? v.scans.length : null },
-
             ];
             fields.forEach(f => {
                 let value = f.custom ? f.custom(ceremony) : ceremony[f.key];
@@ -3734,6 +3821,9 @@ Sexe: ${visitor.sexe || 'N/A'}
                 .timestamp{text-align: center; color: #6b7280; font-size: 8px; margin-top: 4px; border-top: 1px solid #e5e7eb; padding-top: 2px;}
             </style></head><body>`);
             printWindow.document.write(`<div class="card">
+                <div class="company-info" style="text-align:center;font-size:11px;color:#6b7280;margin-bottom:6px;">
+                    QR-Access | +243 991 048 061
+                </div>
                 <div class="header">
                     <div class="photo-section">${photoHtml}</div>
                     <div class="qr-section"><img src="${qrApiUrl}" alt="QR Code" width="70" height="70"></div>
@@ -3748,3 +3838,5 @@ Sexe: ${visitor.sexe || 'N/A'}
     </script>
 </body>
 </html>
+
+
